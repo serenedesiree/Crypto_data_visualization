@@ -1,0 +1,39 @@
+import matplotlib.pyplot as plt
+import pandas as pd 
+from datetime import datetime 
+
+
+
+#Retrieve the .csv file of crypto data
+data = pd.read_csv('D:\Cypto-data\consolidated_coin_data.csv')
+
+#Convert into dataframe
+
+df = pd.DataFrame(data)
+
+#Set Currency as the index.
+df.set_index('Currency')
+
+
+#Retrieves the names of every currency in the graph, capitalizes them, changes them into a gramatically 
+#correct string format
+l = 'Currencies in this graph: ' + ', '.join(df.Currency.unique())
+currencies = df.Currency.unique()
+currencies = [name.capitalize() for name in currencies]
+print('Currencies in this graph: ' + ', '.join(currencies))
+
+
+    
+
+#Remove commas, change date to machine readable format
+bitcoin = df.loc[df['Currency'] == 'bitcoin']
+bitcoin = bitcoin.apply(lambda x: x.str.replace(',',''))
+bitcoin[['High','Low','Open','Close']] = bitcoin[['High','Low','Open','Close']].astype(float)
+bitcoin.loc[:,'Date'] = bitcoin.Date.apply(lambda x: datetime.strptime(x, '%b %d %Y'))
+
+#creates graph
+y = bitcoin['High']
+x = bitcoin['Date']
+fig, ax = plt.subplots()
+ax.plot(x,y)
+plt.show()
